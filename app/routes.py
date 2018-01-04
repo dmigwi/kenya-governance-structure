@@ -1,5 +1,5 @@
-from app import app
 from flask import request
+from app import app
 from app.constituency_view import ConstituencyData
 from app.county_view import CountyData
 from app.ward_view import WardData
