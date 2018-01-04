@@ -2,16 +2,16 @@ from app.models import County, Constituency
 from app.constituency_view import return_constituency
 
 def return_county(county):
-    if isinstance(county, County) and county not None:
+    if isinstance(county, County) and county is not None:
         constituencies = Constituency().get_by_county_code(county.code)
 
         return { 
             "code": county.code,
             "name": county.name, 
-            "Constituencies": [return_constituency(constituency) for constituency in constituencies] 
+            "constituencies": [return_constituency(constituency) for constituency in constituencies] 
             }
     else:
-        return { "code": "", "name": "", "Constituencies":"[]" }
+        return { "code": "", "name": "", "constituencies":"[]" }
 
 class CountyData(object):
     
@@ -19,8 +19,8 @@ class CountyData(object):
         self.county = County()
     
     def fetch_county(self, code):
-        if not isinstance(code, integer):
-            return {"error": "Invalid code found"}
+        if not isinstance(code, int):
+            return {"error": "Invalid code found :" + str(code)}
 
         return return_county(self.county.get_one(code))
 
@@ -29,32 +29,33 @@ class CountyData(object):
 
     
     def add_new_county(self, name):
-        if not instance(name, string):
-            return {"error": "Invalid name found: "+name}
+        if not isinstance(name, str):
+            return {"error": "Invalid name found: "+ str(name)}
 
-        try
-            return return_county(county(code=code, name=name).save())
+        try:
+            return return_county(County(name=name).save())
         except:
+            raise
             return {"error": "Creating new county failed"}
 
     def update_county(self, code, name):
-        if not instance(code, integer):
-             return {"error": "Invalid code found: "+code}
+        if not isinstance(code, int):
+             return {"error": "Invalid code found: "+ str(code)}
              
-        else if not instance(name, string):
-             return {"error": "Invalid name found: "+name} 
+        elif not isinstance(name, str):
+             return {"error": "Invalid name found: "+ str(name)} 
 
         county = self.county.get_one(code)
-        county.code = code if code != 0 else county.code
         county.name = name if name != "" else county.name
 
-        try
+        try:
             return return_county(county.update())
         except:
+            raise
             return {"error": "Updating county failed"}
 
     def delete_county(self, code):
-        if not instance(code, integer):
-            return {"error": "Invalid code found: "+code}
+        if not isinstance(code, int):
+            return {"error": "Invalid code found: "+ str(code)}
         
         self.county.get_one(code).delete()
